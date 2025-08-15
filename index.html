@@ -1,27 +1,30 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Diego - Tienda de móviles</title>
-    <link rel="stylesheet" type="text/css" href="https://github.com/swagger-api/swagger-ui/tree/master/dist/swagger-ui.css" />
-  </head>
-  <body>
-    <div id="swagger-ui"></div>
-    <script src="https://github.com/swagger-api/swagger-ui/tree/master/dist/swagger-ui-bundle.js"></script>
-    <script src="https://github.com/swagger-api/swagger-ui/tree/master/dist/swagger-ui-standalone-preset.js"></script>
-    <script>
-      window.onload = function() {
-        const ui = SwaggerUIBundle({
-          url: "tienda-moviles-api.yaml",
-          dom_id: "#swagger-ui",
-          presets: [
-            SwaggerUIBundle.presets.apis,
-            SwaggerUIStandalonePreset
-          ],
-          layout: "StandaloneLayout",
-        });
-        window.ui = ui;
-      };
-    </script>
-  </body>
-</html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="//unpkg.com/swagger-ui-dist@3/swagger-ui.css">
 
+  <title>Tienda de móviles API v1</title>
+
+<body>
+
+  <div id="tienda-oas" />
+
+  <script src="//unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js"></script>
+  <script>
+
+    window.onload = function() {
+
+      const ui = SwaggerUIBundle({
+        url: "tienda-moviles-api.yaml",
+        dom_id: "#tienda-oas",
+        deepLinking: true,
+      })
+
+    }
+
+  </script>
+
+</body>
+</html>
