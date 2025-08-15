@@ -1,15 +1,26 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <title>API Documentation</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body { margin: 0; padding: 0; }
-  </style>
-</head>
-<body>
-  <redoc spec-url="tienda-moviles-api.yaml"></redoc>
-  <script src="https://cdn.jsdelivr.net/npm/redoc@2.0.0-rc.55/bundles/redoc.standalone.js"> </script>
-</body>
+  <head>
+    <title>Diego - Tienda de móviles</title>
+    <link rel="stylesheet" type="text/css" href="swagger-ui.css" />
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="swagger-ui-bundle.js"></script>
+    <script src="swagger-ui-standalone-preset.js"></script>
+    <script>
+      window.onload = function() {
+        const ui = SwaggerUIBundle({
+          url: "tienda-moviles-api.yaml",
+          dom_id: "#swagger-ui",
+          presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIStandalonePreset
+          ],
+          layout: "StandaloneLayout",
+        });
+        window.ui = ui;
+      };
+    </script>
+  </body>
 </html>
