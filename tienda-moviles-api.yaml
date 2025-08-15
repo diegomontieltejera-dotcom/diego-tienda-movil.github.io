@@ -1,0 +1,477 @@
+openapi: 3.0.3
+info: 
+    title: Tienda de móviles
+    #summary: |
+    #          API para el aplicativo de la tienda de móviles. Tiene cobertura de servicios operacionales para el catálogo de equipos y la gestión de ventas en tienda. 
+    termsOfService: www.dvt-spain.com/terms
+    contact:
+      name: Diego Montiel
+      url: www.gitlab.com/diego
+      email: diego.montiel.tejera@devoteam.com
+    license: 
+      name: Apache 2.0
+      url: www.apache.org
+    version: 0.0.1
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: Tienda de móviles API Auto Mocking
+    url: https://virtserver.swaggerhub.com/dvt-6b3/movil-store-1496/0.0.1
+  # Producción
+  - description: Pruebas API Auto Mocking
+    url: https://virtserver.swaggerhub.com/dvt-6b3/movil-store-1496/0.0.1
+tags: 
+  - name: Categorías
+    description: Categorías de los productos
+  - name: Productos
+    description: Inventario de productos
+  - name: Pedidos
+    description: Gestión de pedidos
+security: 
+  - BasicAuth: []
+  - BearerToken: []
+paths:
+  /categorias:
+    get:
+      tags: 
+        - Categorías
+      summary: Lista de categorías de móviles
+      description: Categorías de móviles con su id y denominación **sólo  formato json**
+      parameters:
+        - $ref: "#/components/parameters/categoriaIdQueryOpcParam"
+      responses:
+        '200':
+          description: Lista de categorías
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Categoria"
+              examples:
+                todas-las-categorias:
+                  summary: Lista de ejemplo
+                  value:
+                    - id: 1
+                      denominacion: Móviles gama económica
+                    - id: 2
+                      denominacion: Móviles gama media
+                    - id: 3
+                      denominacion: Móviles gama alta
+                    - id: 4
+                      denominacion: Tabletas y accesorios
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+  /categorias/{id}:
+    get:
+      tags: 
+        - Categorías
+      summary: Obtener la categoría por id
+      description: Categoría de móviles a partir de su id
+      parameters: 
+        - $ref: "#/components/parameters/categoriaIdPathParam"
+      responses:
+        '200':
+          description: Lista de categorías
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Categoria"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+                      
+  /productos:
+    get:
+      tags: 
+        - Productos
+      summary: Lista de productos
+      description: Lista de productos por categoría y cantidad en almacén
+      parameters: 
+         - $ref: "#/components/parameters/categoriaIdQueryObligParam"
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Producto"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - Productos
+      summary: Alta de productos
+      description: Alta de uno o varios productos
+      requestBody:
+        description: Lista de nuevos productos
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/Producto"
+      responses:
+        '201':
+          description: n productos creados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Producto"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+  /productos/{id}:
+    get:
+      tags: 
+        - Productos
+      summary: Ficha del producto
+      description: Producto por código de barras
+      parameters: 
+        - $ref: "#/components/parameters/productoIdPathParam"
+      responses:
+        '200':
+          description: Producto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Producto"        
+        '404':
+          description: No se encuentra el producto
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+  /pedidos:
+    post:
+      tags: 
+        - Pedidos
+      summary: Crear pedido
+      description: Crear nuevo pedido a la tienda para su procesamiento y envío
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pedidos:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      fecha:
+                        type: string
+                      cantidad:
+                        type: integer
+                      productoId: 
+                        type: integer
+                      direccion:
+                        type: object
+                        properties: 
+                          tipo-via: 
+                            type: string
+                          nombre-via:
+                            type: string
+                          numero:
+                            type: string
+                          cp: 
+                            type: integer
+            
+      responses:
+        '201':
+          description: Pedido creado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pedidos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: 
+                          type: integer
+                        fecha:
+                          type: string
+                        cantidad:
+                          type: integer
+                        productoId: 
+                          type: integer
+                        direccion:
+                          type: object
+                          properties: 
+                            tipo-via: 
+                              type: string
+                            nombre-via:
+                              type: string
+                            numero:
+                              type: string
+                            cp: 
+                              type: integer
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      tags: 
+        - Pedidos
+      summary: Actualizar pedido
+      description: Actualizar pedido
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                fecha:
+                  type: string
+                cantidad:
+                  type: integer
+                productoId: 
+                  type: integer
+                direccion:
+                  type: object
+                  properties: 
+                    tipo-via: 
+                      type: string
+                    nombre-via:
+                      type: string
+                    numero:
+                      type: string
+                    cp: 
+                      type: integer
+      responses:
+        '200':
+          description: Pedido actualizado
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags: 
+        - Pedidos
+      summary: Eliminar un pedido
+      description: Eliminar el pedido por is de pedido.
+      parameters: 
+        - $ref: "#/components/parameters/pedidoIdQueryParam"
+      responses:
+        '204':
+          description: Pedido eliminado.
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+    get:
+      tags: 
+        - Pedidos
+      description: Obtener pedidos
+      summary: Obtene una lista de pedidos aplicando filtros
+      parameters: 
+        - $ref: "#/components/parameters/pedidoIdQueryParam"
+        - $ref: "#/components/parameters/pedidoDesdeQueryParam"
+        - $ref: "#/components/parameters/pedidoHastaQueryParam"
+      responses:
+        '200':
+          description: Lista de pedidos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    fecha:
+                        type: string
+                    cantidad:
+                      type: integer
+                    productoId: 
+                      type: integer
+                    direccion:
+                      type: object
+                      properties: 
+                        tipo-via: 
+                          type: string
+                        nombre-via:
+                          type: string
+                        numero:
+                          type: string
+                        cp: 
+                          type: integer
+              examples:
+                varios:
+                  summary: Varios resultados
+                  value:
+                    - id: 20250801000001
+                      fecha: '01-08-2025 09:30:00'
+                      cantidad: 1
+                      productoId: 10000000000001
+                      direccion:
+                        tipo-via: 'Calle'
+                        nombre-via: 'Burgos'
+                        numero: '19'
+                        cp: 28300
+                    - id: 20250801000002
+                      fecha: '01-08-2025 11:30:00'
+                      cantidad: 1
+                      productoId: 10000000999001
+                      direccion:
+                        tipo-via: 'Avenida'
+                        nombre-via: 'de los Poblados'
+                        numero: '19'
+                        cp: 28004
+                    - id: 20250801000003
+                      fecha: '01-08-2025 12:30:00'
+                      cantidad: 3
+                      productoId: 10000023230001
+                      direccion:
+                        tipo-via: 'Calle'
+                        nombre-via: 'Álamo'
+                        numero: '19'
+                        cp: 28301
+                unico:
+                  summary: Único resultado
+                  value:
+                    - id: 20250801000001
+                      fecha: '01-08-2025 09:30:00'
+                      cantidad: 1
+                      productoId: 10000000000001
+                      direccion:
+                        tipo-via: 'Calle'
+                        nombre-via: 'Burgos'
+                        numero: '19'
+components:
+  parameters:
+    categoriaIdQueryOpcParam:
+      name: id
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 4
+      examples:
+        cat1:
+          summary: Móviles gama económica
+          value: 1
+        cat2:
+          summary: Móviles gama media
+          value: 2
+        cat3:
+          summary: Móviles gama alta
+          value: 3
+        cat4:
+          summary: Tabletas y accesorios
+          value: 4
+    categoriaIdQueryObligParam:
+      name: id
+      in: query
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 4
+      examples:
+        cat1:
+          summary: Móviles gama económica
+          value: 1
+        cat2:
+          summary: Móviles gama media
+          value: 2
+        cat3:
+          summary: Móviles gama alta
+          value: 3
+        cat4:
+          summary: Tabletas y accesorios
+          value: 4
+    categoriaIdPathParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 4
+      examples:
+        cat1:
+          summary: Móviles gama económica
+          value: 1
+        cat2:
+          summary: Móviles gama media
+          value: 2
+        cat3:
+          summary: Móviles gama alta
+          value: 3
+        cat4:
+          summary: Tabletas y accesorios
+          value: 4
+    productoIdPathParam:
+      name: id
+      description: Ficha del producto. búsqueda por código de barras del producto 
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 10000000000001
+        maximum: 10000009999991
+      example: 10000000000001
+    pedidoIdQueryParam:
+      name: id
+      in: query
+      required: true
+      schema:
+        type: integer
+    pedidoDesdeQueryParam:
+      name: desde
+      in: query
+      required: false
+      schema:
+        type: string
+      example: "01-10-2024"
+    pedidoHastaQueryParam: 
+      name: hasta
+      in: query
+      required: false
+      schema:
+        type: string
+      example: "01-10-2024"
+  schemas:
+    Categoria:
+      type: object
+      properties: 
+        id: 
+          type: integer
+          example: 1
+        denominacion:
+          type: string
+          example: Móviles gama económica
+    Producto:
+      type: object
+      properties: 
+        id: 
+          type: integer
+          example: 10000000000001
+        marca:
+          type: string
+          example: "Samsung"
+        modelo:
+          type: string
+          example: "Galaxy A14"
+        precioEuros:
+          type: number
+          format: float
+          example: 199.99
+        stockAlmacen:
+          type: integer
+          example: 25
+        categoria:
+          $ref: "#/components/schemas/Categoria"
+      required: [id,marca,modelo,precioEuros,stockAlmacen,categoria]
+  responses:
+    InternalServerError:
+      description: Ocurrió un error imprevisto. COnsulte con el soporte técnico de la aplicación en soporte@tienda.com
+  securitySchemes:
+    BasicAuth:
+      scheme: basic
+      type: http
+    BearerToken:
+      scheme: bearer
+      type: http
+      bearerFormat: JWT
