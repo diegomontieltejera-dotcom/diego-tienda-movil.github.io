@@ -67,6 +67,7 @@ paths:
         - Categorías
       summary: Obtener la categoría por id
       description: Categoría de móviles a partir de su id
+      operationId: obtenerCategoriaPorId
       parameters: 
         - $ref: "#/components/parameters/categoriaIdPathParam"
       responses:
@@ -128,6 +129,7 @@ paths:
         - Productos
       summary: Ficha del producto
       description: Producto por código de barras
+      operationId: ObtenerProductoPorId
       parameters: 
         - $ref: "#/components/parameters/productoIdPathParam"
       responses:
@@ -151,63 +153,29 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                pedidos:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      fecha:
-                        type: string
-                      cantidad:
-                        type: integer
-                      productoId: 
-                        type: integer
-                      direccion:
-                        type: object
-                        properties: 
-                          tipo-via: 
-                            type: string
-                          nombre-via:
-                            type: string
-                          numero:
-                            type: string
-                          cp: 
-                            type: integer
-            
+             $ref: "#/components/schemas/Pedido"
       responses:
         '201':
           description: Pedido creado
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  pedidos:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id: 
-                          type: integer
-                        fecha:
-                          type: string
-                        cantidad:
-                          type: integer
-                        productoId: 
-                          type: integer
-                        direccion:
-                          type: object
-                          properties: 
-                            tipo-via: 
-                              type: string
-                            nombre-via:
-                              type: string
-                            numero:
-                              type: string
-                            cp: 
-                              type: integer
+                $ref: "#/components/schemas/Pedido"
+              example: 
+               unico:
+                  summary: Único resultado
+                  value:
+                    - id: 20250801000001
+                      fecha: '01-08-2025 09:30:00'
+                      cantidad: 1
+                      productoId: 10000000000001
+                      direccion:
+                        tipo-via: 'Calle'
+                        nombre-via: 'Burgos'
+                        numero: '19'
+          links:
+            ObtenerPedidoPorId:
+              $ref: "#/components/links/GetPedidoPorId"
         '500':
           $ref: "#/components/responses/InternalServerError"
     put:
@@ -219,27 +187,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                fecha:
-                  type: string
-                cantidad:
-                  type: integer
-                productoId: 
-                  type: integer
-                direccion:
-                  type: object
-                  properties: 
-                    tipo-via: 
-                      type: string
-                    nombre-via:
-                      type: string
-                    numero:
-                      type: string
-                    cp: 
-                      type: integer
+              $ref: "#/components/schemas/Pedido"
       responses:
         '200':
           description: Pedido actualizado
@@ -261,7 +209,7 @@ paths:
       tags: 
         - Pedidos
       description: Obtener pedidos
-      summary: Obtene una lista de pedidos aplicando filtros
+      summary: Obtener una lista de pedidos aplicando filtros
       parameters: 
         - $ref: "#/components/parameters/pedidoIdQueryParam"
         - $ref: "#/components/parameters/pedidoDesdeQueryParam"
@@ -274,27 +222,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    fecha:
-                        type: string
-                    cantidad:
-                      type: integer
-                    productoId: 
-                      type: integer
-                    direccion:
-                      type: object
-                      properties: 
-                        tipo-via: 
-                          type: string
-                        nombre-via:
-                          type: string
-                        numero:
-                          type: string
-                        cp: 
-                          type: integer
+                  $ref: "#/components/schemas/Pedido"
               examples:
                 varios:
                   summary: Varios resultados
@@ -337,6 +265,25 @@ paths:
                         tipo-via: 'Calle'
                         nombre-via: 'Burgos'
                         numero: '19'
+        '204':
+          description: No content
+  /pedidos/{id}:
+    get:
+      tags:
+        - Pedidos
+      summary: Obtener pedido por id
+      description: Obtener los detalles del pedido por id
+      operationId: obtenerPedidoPorId
+      parameters:
+        - $ref: "#/components/parameters/pedidoIdPathParam"
+      responses:
+        '200':
+          description: Detalle del pedido
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/Pedido"
+              
 components:
   parameters:
     categoriaIdQueryOpcParam:
@@ -432,6 +379,13 @@ components:
       schema:
         type: string
       example: "01-10-2024"
+    pedidoIdPathParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: number
+        example: 20250801000001
   schemas:
     Categoria:
       type: object
@@ -464,9 +418,50 @@ components:
         categoria:
           $ref: "#/components/schemas/Categoria"
       required: [id,marca,modelo,precioEuros,stockAlmacen,categoria]
+    Pedido:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 20250801000001
+        fecha:
+            type: string
+            format: datetime
+            example: "12-05-2025 14:34:00"
+        cantidad:
+          type: integer
+          example: 1
+        producto: 
+           $ref: "#/components/schemas/Producto"
+        direccion:
+          type: object
+          properties: 
+            tipo-via: 
+              type: string
+              example: Calle
+            nombre-via:
+              type: string
+              example: Burgos
+            numero:
+              type: string
+              example: "19 Bajo A"
+            cp: 
+              type: integer
+              example: 28005
+  links:
+    GetCategoriaPorId:
+      description: Obtener la categoría por su id
+      operationId: obtenerCategoriaPorId
+      parameters:
+        id: "#response.body#/id"
+    GetPedidoPorId:
+      description: Obtener los _detalles_ del Pedido por su `id`
+      operationId: obtenerPedidoPorId
+      parameters:
+        id: "#response.body#/id"
   responses:
     InternalServerError:
-      description: Ocurrió un error imprevisto. COnsulte con el soporte técnico de la aplicación en soporte@tienda.com
+      description: "Ocurrió un error imprevisto. Consulte con el soporte técnico de la aplicación en soporte@tienda.com"
   securitySchemes:
     BasicAuth:
       scheme: basic
